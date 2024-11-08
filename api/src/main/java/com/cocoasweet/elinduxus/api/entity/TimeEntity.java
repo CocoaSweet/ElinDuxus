@@ -1,7 +1,8 @@
 package com.cocoasweet.elinduxus.api.entity;
 
 import java.time.LocalDate;
-
+import org.springframework.beans.BeanUtils;
+import com.cocoasweet.elinduxus.api.dto.TimeDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,4 +29,8 @@ public class TimeEntity {
 
 	@Column(name = "data")
 	private LocalDate data;
+	
+	public TimeEntity(TimeDTO time) {
+		BeanUtils.copyProperties(time, this);
+	}
 }

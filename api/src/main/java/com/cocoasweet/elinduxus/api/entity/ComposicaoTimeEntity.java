@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +20,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class ComposicaoTimeEntity {
 	
 	@Id
@@ -28,11 +30,15 @@ public class ComposicaoTimeEntity {
 	
 	@ManyToOne
 	@JoinColumn(name = "id_time")
-	private TimeEntity time;
+	private TimeEntity time = new TimeEntity();
 
 	@ManyToOne
 	@JoinColumn(name = "id_integrante")
-	private IntegranteEntity integrante;
+	private IntegranteEntity integrante = new IntegranteEntity();
 
+	public ComposicaoTimeEntity(Long idTime, Long idIntegrante) {
+		this.time.setId(idTime);
+		this.integrante.setId(idIntegrante);
+	}
 	
 }

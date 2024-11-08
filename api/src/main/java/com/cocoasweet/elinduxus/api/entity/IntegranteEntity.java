@@ -1,5 +1,7 @@
 package com.cocoasweet.elinduxus.api.entity;
 
+import org.springframework.beans.BeanUtils;
+import com.cocoasweet.elinduxus.api.dto.IntegranteDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,10 +15,10 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "integrantes")
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class IntegranteEntity {
 
 	@Id
@@ -33,5 +35,8 @@ public class IntegranteEntity {
 	@Column(nullable = false , name = "funcao")
 	private String funcao;
 	
+	public IntegranteEntity(IntegranteDTO integrante) {
+		BeanUtils.copyProperties(integrante, this);
+	}
 	
 }
