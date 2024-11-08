@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.cocoasweet.elinduxus.api.dto.DataDTO;
@@ -21,14 +20,14 @@ public class ApiService {
 	@Autowired
 	private ComposicaoTimeImpl composicaoTime;
 	@Autowired
-	private TimeImpl time;
+	private TimeImpl timeService;
 	@Autowired
 	private IntegranteImpl integranteService;
 	    /**
 	     * Vai retornar uma lista com os nomes dos integrantes do time daquela data
 	     */
 	    public List<String> timeDaData(LocalDate data){
-	    	List<Long> ids = time.procurarIdPorData(data);
+	    	List<Long> ids = timeService.procurarIdPorData(data);
 	    	List<String> nomeIntegrantes = new ArrayList<String>();
 	    	for(Long id: ids) {
 	    		List<RequestComposicaoTimeDTO> compTime = composicaoTime.findCompByTimeId(id);
@@ -45,7 +44,7 @@ public class ApiService {
 	     * dentro do período
 	     */
 	    public RequestIntegranteDTO integranteMaisUsado(DataDTO datas){
-	    	List<Long> ids = time.procurarIdsPorData(datas.getDataInicial(), datas.getDataFinal());
+	    	List<Long> ids = timeService.procurarIdsPorData(datas.getDataInicial(), datas.getDataFinal());
 	    	Map<RequestIntegranteDTO, Integer> quantidadeIntegrantes = new HashMap<>();
 	    	//Procura composição dos times pela chave timeID
 	    	for(Long id: ids) {
@@ -79,7 +78,7 @@ public class ApiService {
 	     * dentro do período
 	     */
 	    public List<String> timeMaisComum(DataDTO datas){
-	    	List<Long> ids = time.procurarIdsPorData(datas.getDataInicial(), datas.getDataFinal());
+	    	List<Long> ids = timeService.procurarIdsPorData(datas.getDataInicial(), datas.getDataFinal());
 	    	Map<TimeEntity, Integer> times = new HashMap<>();
 	    	for(Long id: ids) {
 	    		List<RequestComposicaoTimeDTO> composicoes = composicaoTime.findCompByTimeId(id);
@@ -109,7 +108,67 @@ public class ApiService {
 	    	
 	        return nomeIntegrantes.stream().toList();
 	    }
-
+	    
+	    /**
+	     * Vai retornar a função mais comum nos times dentro do período
+	     */
+	    public String funcaoMaisComum(DataDTO datas){
+	    	List<Long> ids = timeService.procurarIdsPorData(datas.getDataInicial(), datas.getDataFinal());
+	    	Map<String, Integer> funcoes = new HashMap<>();
+	    	for(Long id: ids) {
+	    		List<RequestComposicaoTimeDTO> composicoes = composicaoTime.findCompByTimeId(id);
+	    		for(RequestComposicaoTimeDTO composicao: composicoes) {
+	    			List<RequestIntegranteDTO> integrantes = integranteService.extrairIntegrante(composicao);
+	    			for(RequestIntegranteDTO integrante: integrantes) {
+	    				if(!funcoes.containsKey(integrante.getFuncao())) {
+	    					funcoes.put(integrante.getFuncao(), 0);
+	    				}
+	    				int presencaTemp = funcoes.get(integrante.getFuncao());
+	    				funcoes.put(integrante.getFuncao(), presencaTemp+1);
+	    			}
+	    		}
+	    		
+	    	}
+	    	String funcao = null;
+	    	int maiorFrequencia = 0;
+	    	for(Map.Entry<String, Integer> entry:funcoes.entrySet()) {
+	    		if(entry.getValue() > maiorFrequencia) {
+	    			maiorFrequencia = entry.getValue();
+	    			funcao = entry.getKey();
+	    		}
+	    	}
+	        return funcao;
+	    }
+	    
+	    /**
+	     * Vai retornar o nome da Franquia mais comum nos times dentro do período
+	     */
+	    public String franquiaMaisFamosa(DataDTO datas) {
+	    	List<Long> ids = timeService.procurarIdsPorData(datas.getDataInicial(), datas.getDataFinal());
+	    	Map<String, Integer> franquias = new HashMap<>();
+	    	for(Long id: ids) {
+	    		List<RequestComposicaoTimeDTO> composicoes = composicaoTime.findCompByTimeId(id);
+	    		for(RequestComposicaoTimeDTO composicao: composicoes) {
+	    			List<RequestIntegranteDTO> integrantes = integranteService.extrairIntegrante(composicao);
+	    			for(RequestIntegranteDTO integrante: integrantes) {
+	    				if(!franquias.containsKey(integrante.getFranquia())) {
+	    					franquias.put(integrante.getFranquia(), 0);
+	    				}
+	    				int presencaTemp = franquias.get(integrante.getFranquia());
+	    				franquias.put(integrante.getFranquia(), presencaTemp + 1);
+	    			}
+	    		}
+	    	}
+	    	String franquia = null;
+	    	int maiorFrequencia = 0;
+	    	for(Map.Entry<String, Integer> entry: franquias.entrySet()) {
+	    		if(entry.getValue() > maiorFrequencia) {
+	    			maiorFrequencia = entry.getValue();
+	    			franquia = entry.getKey();
+	    		}
+	    	}
+	        return franquia;
+	    }
 	    
 	    
 	}
