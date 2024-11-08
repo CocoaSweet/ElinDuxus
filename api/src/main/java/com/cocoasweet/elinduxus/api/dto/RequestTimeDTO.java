@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import org.springframework.beans.BeanUtils;
 import com.cocoasweet.elinduxus.api.entity.TimeEntity;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class RequestTimeDTO {
 
 	private long id;

@@ -2,11 +2,18 @@ package com.cocoasweet.elinduxus.api.service.impl;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.cocoasweet.elinduxus.api.dto.DataDTO;
 import com.cocoasweet.elinduxus.api.dto.RequestComposicaoTimeDTO;
 import com.cocoasweet.elinduxus.api.dto.RequestIntegranteDTO;
+import com.cocoasweet.elinduxus.api.entity.TimeEntity;
 
 @Service
 public class ApiService {
@@ -16,7 +23,7 @@ public class ApiService {
 	@Autowired
 	private TimeImpl time;
 	@Autowired
-	private IntegranteImpl integrante;
+	private IntegranteImpl integranteService;
 	    /**
 	     * Vai retornar uma lista com os nomes dos integrantes do time daquela data
 	     */
@@ -26,12 +33,83 @@ public class ApiService {
 	    	for(Long id: ids) {
 	    		List<RequestComposicaoTimeDTO> compTime = composicaoTime.findCompByTimeId(id);
 	    		for(RequestComposicaoTimeDTO compTimes: compTime) {
-	    			List<RequestIntegranteDTO> integrantes = integrante.extrairIntegrante(compTimes);
-	    			nomeIntegrantes.addAll(integrante.extrairNomeIntegrante(integrantes));
+	    			List<RequestIntegranteDTO> integrantes = integranteService.extrairIntegrante(compTimes);
+	    			nomeIntegrantes.addAll(integranteService.extrairNomeIntegrante(integrantes));
 	    		}
 		    }
 	    	return nomeIntegrantes;
 	    }
+	    
+	    /**
+	     * Vai retornar o integrante que tiver presente na maior quantidade de times
+	     * dentro do período
+	     */
+	    public RequestIntegranteDTO integranteMaisUsado(DataDTO datas){
+	    	List<Long> ids = time.procurarIdsPorData(datas.getDataInicial(), datas.getDataFinal());
+	    	Map<RequestIntegranteDTO, Integer> quantidadeIntegrantes = new HashMap<>();
+	    	//Procura composição dos times pela chave timeID
+	    	for(Long id: ids) {
+	    		List<RequestComposicaoTimeDTO> compTimes = composicaoTime.findCompByTimeId(id);
+	    		//Percorre a lista de composição de time para extrair os integrantes
+	    			for(RequestComposicaoTimeDTO compTime: compTimes) {
+	    				List<RequestIntegranteDTO> integrantes = integranteService.extrairIntegrante(compTime);
+	    				for(RequestIntegranteDTO integrante: integrantes) {
+	    					//Para cada integrante, cria uma nova chave se ainda não estiver na estrutura Map
+	    					if(!quantidadeIntegrantes.containsKey(integrante)) {
+	    						quantidadeIntegrantes.put(integrante, 0);
+	    					}
+	    					int presencaTemp = quantidadeIntegrantes.get(integrante);
+	    					quantidadeIntegrantes.put(integrante, presencaTemp+1);
+	    				}
+	    		}
+	    	}
+	    	RequestIntegranteDTO integrante = null;
+	    	int maiorFrequencia = 0;
+	    	for(Map.Entry<RequestIntegranteDTO, Integer> entry : quantidadeIntegrantes.entrySet()) {
+	    		if(entry.getValue() > maiorFrequencia) {
+	    			maiorFrequencia = entry.getValue();
+	    			integrante = entry.getKey();
+	    		}
+	    	}
+	        return integrante;
+	    }
+	    
+	    /**
+	     * Vai retornar uma lista com os nomes dos integrantes do time mais comum
+	     * dentro do período
+	     */
+	    public List<String> timeMaisComum(DataDTO datas){
+	    	List<Long> ids = time.procurarIdsPorData(datas.getDataInicial(), datas.getDataFinal());
+	    	Map<TimeEntity, Integer> times = new HashMap<>();
+	    	for(Long id: ids) {
+	    		List<RequestComposicaoTimeDTO> composicoes = composicaoTime.findCompByTimeId(id);
+	    		for(RequestComposicaoTimeDTO composicao: composicoes) {
+	    			if(!times.containsKey(composicao.getTime())) {
+	    				times.put(composicao.getTime(), 0);
+	    			}
+	    			int presencaTemp = times.get(composicao.getTime());
+	    			times.put(composicao.getTime(), presencaTemp +1);
+	    		}
+	    	}
+	    	TimeEntity maisComum = null;
+	    	int maiorFrequencia = 0;
+	    	for(Map.Entry<TimeEntity, Integer> entry: times.entrySet()) {
+	    		if(entry.getValue() > maiorFrequencia) {
+	    			maiorFrequencia = entry.getValue();
+	    			maisComum = entry.getKey();
+	    		}
+	    	}
+	    	List<RequestComposicaoTimeDTO> composicoes = composicaoTime.findCompByTimeId(maisComum.getId());
+	    	List<RequestIntegranteDTO> integrantes = new ArrayList<>();
+	    	Set<String> nomeIntegrantes = new HashSet<String>();
+	    	for(RequestComposicaoTimeDTO composicao: composicoes) {
+	    		integrantes = integranteService.extrairIntegrante(composicao);
+	    		nomeIntegrantes.addAll(integranteService.extrairNomeIntegrante(integrantes));
+	    	}
+	    	
+	        return nomeIntegrantes.stream().toList();
+	    }
 
+	    
 	    
 	}

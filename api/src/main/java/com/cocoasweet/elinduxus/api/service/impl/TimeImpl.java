@@ -1,6 +1,7 @@
 package com.cocoasweet.elinduxus.api.service.impl;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,13 +21,25 @@ public class TimeImpl implements Time {
 		TimeEntity timeEntity = new TimeEntity(time);
 		timeRepository.save(timeEntity);
 		return timeEntity.getId();
-		
 	}
+	
+	@Override
 	public List<Long> procurarIdPorData(LocalDate data) {
 		List<TimeEntity> requestTime = timeRepository.findByData(data);
-		List<Long> ids = requestTime.stream().map(TimeEntity::getId).toList();
-		return ids;
+		return requestTime.stream().map(TimeEntity::getId).toList();
+	}
+	
+	@Override
+	public List<Long> procurarIdsPorData(LocalDate dataInicial, LocalDate dataFinal){
+		List<TimeEntity> requestTimes = new ArrayList<>();
+		if(dataInicial == null && dataFinal == null) {
+			requestTimes = timeRepository.findAll();
+		}else {
+			requestTimes = timeRepository.findAllByDataBetween(dataInicial, dataFinal);
+		}
+		return requestTimes.stream().map(TimeEntity::getId).toList();
 		
 	}
+	
 
 }

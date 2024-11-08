@@ -10,4 +10,5 @@ import com.cocoasweet.elinduxus.api.entity.TimeEntity;
 public interface TimeRepository extends JpaRepository<TimeEntity, Long>{
 
 	List<TimeEntity> findByData(LocalDate data);
+	List<TimeEntity> findAllByDataBetween(LocalDate dataInicial, LocalDate dataFinal);
 }

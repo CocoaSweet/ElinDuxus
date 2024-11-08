@@ -8,4 +8,6 @@ public interface Time {
 
 	Long saveTime(TimeDTO time);
 	List<Long> procurarIdPorData(LocalDate data);
+	List<Long> procurarIdsPorData(LocalDate dataInicial, LocalDate dataFinal);
+
 }

@@ -5,10 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.cocoasweet.elinduxus.api.dto.DataDTO;
+import com.cocoasweet.elinduxus.api.dto.RequestIntegranteDTO;
 import com.cocoasweet.elinduxus.api.service.impl.ApiService;
 
 @RestController
@@ -22,6 +25,16 @@ public class ApiController {
 	@GetMapping("/time-da-data")
 	public List<String> timeDaData(@RequestParam("data") LocalDate data){
 		return apiService.timeDaData(data);
+	}
+	
+	@PostMapping("/integrante-mais-usado")
+	public String integranteMaisUsado(@RequestBody DataDTO datas ) {
+		return apiService.integranteMaisUsado(datas).toString();
+	}
+	
+	@PostMapping("/integrantes-time-mais-comum")
+	public List<String> timeMaisComum(@RequestBody DataDTO datas){
+		return apiService.timeMaisComum(datas);
 	}
 	
 	
