@@ -2,6 +2,8 @@ package com.cocoasweet.elinduxus.api.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,6 +46,16 @@ public class ApiController {
 	@PostMapping("/franquia-mais-famosa")
 	public String franquiaMaisFamosa(@RequestBody DataDTO datas) {
 		return apiService.franquiaMaisFamosa(datas);
+	}
+	
+	@PostMapping("/contagem-por-franquia")
+	public Map<String, Long> contagemPorFranquia(@RequestBody DataDTO datas){
+		return apiService.contagemPorFranquia(datas);
+	}
+	
+	@PostMapping("/contagem-por-funcao")
+	public Map<String, Long> contagemPorFuncao(@RequestBody DataDTO datas){
+		return apiService.contagemPorFuncao(datas);
 	}
 	
 	

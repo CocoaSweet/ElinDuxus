@@ -28,8 +28,7 @@ public class RequestIntegranteDTO {
 
 	@Override
 	public String toString() {
-		return "[id=" + id + ", franquia=" + franquia + ", nome=" + nome + ", funcao=" + funcao
-				+ "]";
+		return "[franquia=" + franquia + ", nome=" + nome + ", funcao=" + funcao+ "]";
 	}
 	
 	

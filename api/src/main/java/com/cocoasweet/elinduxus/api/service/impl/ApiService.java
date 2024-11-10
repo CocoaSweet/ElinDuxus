@@ -28,7 +28,7 @@ public class ApiService {
 	     */
 	    public List<String> timeDaData(LocalDate data){
 	    	List<Long> ids = timeService.procurarIdPorData(data);
-	    	List<String> nomeIntegrantes = new ArrayList<String>();
+	    	Set<String> nomeIntegrantes = new HashSet<String>();
 	    	for(Long id: ids) {
 	    		List<RequestComposicaoTimeDTO> compTime = composicaoTime.findCompByTimeId(id);
 	    		for(RequestComposicaoTimeDTO compTimes: compTime) {
@@ -36,7 +36,7 @@ public class ApiService {
 	    			nomeIntegrantes.addAll(integranteService.extrairNomeIntegrante(integrantes));
 	    		}
 		    }
-	    	return nomeIntegrantes;
+	    	return nomeIntegrantes.stream().toList();
 	    }
 	    
 	    /**
@@ -170,5 +170,48 @@ public class ApiService {
 	        return franquia;
 	    }
 	    
+	    /**
+	     * Vai retornar o número (quantidade) de Franquias dentro do período
+	     */
+	    public Map<String, Long> contagemPorFranquia(DataDTO datas){
+	    	List<Long> ids = timeService.procurarIdsPorData(datas.getDataInicial(), datas.getDataFinal());
+	    	Map<String, Long> quantidadeFranquias = new HashMap<>();
+	    	for(Long id: ids) {
+	    		List<RequestComposicaoTimeDTO> composicoes = composicaoTime.findCompByTimeId(id);
+	    		for(RequestComposicaoTimeDTO composicao: composicoes) {
+	    			List<RequestIntegranteDTO> integrantes = integranteService.extrairIntegrante(composicao);
+	    			for(RequestIntegranteDTO integrante: integrantes) {
+	    				if(!quantidadeFranquias.containsKey(integrante.getFranquia())) {
+	    					quantidadeFranquias.put(integrante.getFranquia(), (long) 0);
+	    				}
+	    				Long presencaTemp = quantidadeFranquias.get(integrante.getFranquia());
+	    				quantidadeFranquias.put(integrante.getFranquia(), presencaTemp+1);
+	    			}
+	    		}
+	    	}
+	        return quantidadeFranquias;
+	    }
+	    
+	    /**
+	     * Vai retornar o número (quantidade) de Funções dentro do período
+	     */
+	    public Map<String, Long> contagemPorFuncao(DataDTO datas){
+	    	List<Long> ids = timeService.procurarIdsPorData(datas.getDataInicial(), datas.getDataFinal());
+	    	Map<String, Long> quantidadeFuncoes = new HashMap<>();
+	    	for(Long id: ids) {
+	    		List<RequestComposicaoTimeDTO> composicoes = composicaoTime.findCompByTimeId(id);
+	    		for(RequestComposicaoTimeDTO composicao: composicoes) {
+	    			List<RequestIntegranteDTO> integrantes = integranteService.extrairIntegrante(composicao);
+	    			for(RequestIntegranteDTO integrante: integrantes) {
+	    				if(!quantidadeFuncoes.containsKey(integrante.getFuncao())) {
+	    					quantidadeFuncoes.put(integrante.getFuncao(), (long) 0);
+	    				}
+	    				Long presencaTemp = quantidadeFuncoes.get(integrante.getFuncao());
+	    				quantidadeFuncoes.put(integrante.getFuncao(), presencaTemp+1);
+	    			}
+	    		}
+	    	}
+	        return quantidadeFuncoes;
+	    }
 	    
 	}

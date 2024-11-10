@@ -1,7 +1,10 @@
 package com.cocoasweet.elinduxus.api.service.impl;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.cocoasweet.elinduxus.api.dto.IntegranteDTO;
@@ -31,6 +34,12 @@ public class IntegranteImpl implements Integrante{
 	
 	public List<String> extrairNomeIntegrante(List<RequestIntegranteDTO> integrantes){
 		return integrantes.stream().map(RequestIntegranteDTO::getNome).toList();
+	}
+	
+	public List<IntegranteEntity> listarIntegrantes(){
+		Set<IntegranteEntity> integrantes = new HashSet<>();
+		integrantes.addAll(integranteRepository.findAll());
+		return integrantes.stream().toList();
 	}
 
 }
