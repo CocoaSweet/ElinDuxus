@@ -91,7 +91,7 @@ public class DadosParaTesteApiService {
         return timeDetroidPistonsDe1993;
     }
     
-    public TimeEntity getTimeDetroidPistonsDe1994() {
+    public TimeEntity getTimeChicagoBullsDe1994() {
         return timeChicagoBullsDe1994;
     }
 
